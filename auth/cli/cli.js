@@ -1,0 +1,1 @@
+//small cli to interact with the backend api and actually create a user
