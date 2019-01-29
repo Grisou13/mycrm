@@ -13,6 +13,10 @@ var _auth2 = _interopRequireDefault(_auth);
 
 var _auth3 = require('./auth');
 
+var _utils = require('utils');
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21,15 +25,16 @@ var AuthListener = function () {
     function AuthListener(client) {
         _classCallCheck(this, AuthListener);
 
-        this.rpcClient = client;
+        console.log(_utils2.default.rpc);
+        this.rpcClient = new _utils2.default.rpc.RpcListener(client);
     }
 
     _createClass(AuthListener, [{
         key: 'attachCallbacks',
-        value: function attachCallbacks(client) {
+        value: function attachCallbacks(listener) {
             var _this = this;
 
-            this.registerCallback(client, _auth2.default.AUTH_USER, function (data, response) {
+            this.registerCallback(listener, _auth2.default.AUTH_USER, function (data, response) {
                 _this.auth.login(data, function (token) {
                     response.send({
                         token: token
@@ -41,21 +46,21 @@ var AuthListener = function () {
                 });
             });
 
-            this.registerCallback(client, _auth2.default.GENERATE_TOKEN, function (data, response) {
+            this.registerCallback(listener, _auth2.default.GENERATE_TOKEN, function (data, response) {
                 _this.auth.generateToken(data, function (token) {
                     response.send({
                         token: token
                     });
                 });
             });
-            this.registerCallback(client, _auth2.default.VALIDATE_TOKEN, function (data, response) {
+            this.registerCallback(listener, _auth2.default.VALIDATE_TOKEN, function (data, response) {
                 _this.auth.validate(data, function (res) {
                     response.send({
                         validity: res
                     });
                 });
             });
-            this.registerCallback(client, _auth2.default.DESTROY_TOKEN, function (data, response) {
+            this.registerCallback(listener, _auth2.default.DESTROY_TOKEN, function (data, response) {
                 _this.auth.unvalidate(data, function (res) {
                     response.send({
                         done: res
@@ -63,7 +68,7 @@ var AuthListener = function () {
                 });
             });
 
-            this.registerCallback(client, _auth2.default.CREATE_USER, function (data, response) {
+            this.registerCallback(listener, _auth2.default.CREATE_USER, function (data, response) {
                 _this.auth.signup(data, function (userId) {
                     response.send({
                         userId: userId
@@ -73,9 +78,9 @@ var AuthListener = function () {
         }
     }, {
         key: 'registerCallback',
-        value: function registerCallback(client, name, cb) {
-            client.rpc.provide(name, function (data, response) {
-                cb(data, response);
+        value: function registerCallback(listener, name, cb) {
+            listener.apply(name, function (request, response) {
+                cb(request.body, response);
             });
         }
     }, {

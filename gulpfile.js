@@ -21,7 +21,7 @@ gulp.task('build-js', function() {
       'auth/service/package.json',
       'auth/events/package.json',
       'utils/package.json',
-      
+      'apiGateway/package.json'
     ])
   .pipe(build(es))
     

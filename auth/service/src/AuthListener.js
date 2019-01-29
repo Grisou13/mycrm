@@ -1,12 +1,16 @@
 import events from 'auth.events'
 import {Auth, MongoDbDriver} from './auth'
+import utils from 'utils'
+
+
 export default class AuthListener{
     constructor(client){
-        this.rpcClient = client;
+        console.log(utils.rpc)
+        this.rpcClient = new utils.rpc.RpcListener(client);
         
     }
-    attachCallbacks(client){
-        this.registerCallback(client, events.AUTH_USER, ( data, response ) => {
+    attachCallbacks(listener){
+        this.registerCallback(listener, events.AUTH_USER, ( data, response ) => {
             this.auth.login(data, (token) => {
                 response.send( {
                     token: token,
@@ -18,21 +22,21 @@ export default class AuthListener{
             })
         });
         
-        this.registerCallback(client, events.GENERATE_TOKEN, ( data, response ) => {
+        this.registerCallback(listener, events.GENERATE_TOKEN, ( data, response ) => {
             this.auth.generateToken(data, (token) => {
                 response.send( {
                     token
                 });
             })
         });
-        this.registerCallback(client, events.VALIDATE_TOKEN, ( data, response ) => {
+        this.registerCallback(listener, events.VALIDATE_TOKEN, ( data, response ) => {
             this.auth.validate(data, (res) => {
                 response.send({
                     validity: res
                 })
             })
         });
-        this.registerCallback(client, events.DESTROY_TOKEN, ( data, response ) => {
+        this.registerCallback(listener, events.DESTROY_TOKEN, ( data, response ) => {
             this.auth.unvalidate(data, (res) => {
                 response.send( {
                     done: res
@@ -40,7 +44,7 @@ export default class AuthListener{
             })
         });
 
-        this.registerCallback(client, events.CREATE_USER, (data, response) => {
+        this.registerCallback(listener, events.CREATE_USER, (data, response) => {
             this.auth.signup(data, (userId)=>{
                 response.send({
                     userId: userId
@@ -51,9 +55,9 @@ export default class AuthListener{
         })
         
     }
-    registerCallback(client, name, cb){
-        client.rpc.provide( name, ( data, response ) => {
-            cb(data,response)
+    registerCallback(listener, name, cb){
+        listener.apply( name, ( request, response ) => {
+            cb(request.body,response)
         });
     }
     run(){

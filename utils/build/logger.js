@@ -31,6 +31,5 @@ if (process.env.NODE_ENV !== 'production') {
     format: _winston2.default.format.simple()
   }));
 }
-logger.log("info", "TAMER");
 
 exports.default = logger;

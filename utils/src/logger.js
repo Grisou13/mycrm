@@ -23,6 +23,5 @@ if (process.env.NODE_ENV !== 'production') {
     format: winston.format.simple()
   }));
 }
-logger.log("info","TAMER")
 
 export default logger;
