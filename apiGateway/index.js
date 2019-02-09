@@ -1,3 +1,2 @@
-require('babel-register');
 require('babel-polyfill')
-module.exports = require("./build")
+module.exports = require("./build/app")

@@ -1,70 +1,77 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
-exports.default = undefined;
+exports.default = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _auth = require('auth.events');
-
-var _auth2 = _interopRequireDefault(_auth);
-
-var _utils = require('utils');
-
-var _utils2 = _interopRequireDefault(_utils);
+var _auth = _interopRequireDefault(require("auth.events"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var AuthService = function () {
-    function AuthService(client) {
-        _classCallCheck(this, AuthService);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-        this.client = client;
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var AuthService =
+/*#__PURE__*/
+function () {
+  function AuthService(client) {
+    _classCallCheck(this, AuthService);
+
+    this.client = client;
+  }
+
+  _createClass(AuthService, [{
+    key: "reportError",
+    value: function reportError(error) {
+      console.log("error", error);
     }
+    /**
+     * 
+     * @param {Object} credentials
+     * @return Promise with a valid user
+     */
 
-    _createClass(AuthService, [{
-        key: 'reportError',
-        value: function reportError(error) {
-            console.log("error", error);
-        }
-    }, {
-        key: 'rpcResponseHandler',
-        value: function rpcResponseHandler(cb) {
-            var _this = this;
+  }, {
+    key: "createUser",
+    value: function createUser(credentials) {
+      return this._run(_auth.default.CREATE_USER, credentials);
+    }
+    /**
+     * 
+     * @param {Object} credentials 
+     * @return Promise promise with a valid token
+     */
 
-            return function (err, res) {
-                if (err) _this.reportError(err);
-                console.log("Received response %s", res);
-                if (cb) cb(res);
-            };
-        }
-    }, {
-        key: 'createUser',
-        value: function createUser(credentials, cb) {
-            this.run(_auth2.default.CREATE_USER, credentials, this.rpcResponseHandler(cb));
-        }
-    }, {
-        key: 'login',
-        value: function login(credentials, cb) {
-            this.run(_auth2.default.AUTH_USER, credentials, this.rpcResponseHandler(cb));
-        }
-    }, {
-        key: 'close',
-        value: function close() {
-            this.client.close();
-        }
-    }, {
-        key: 'run',
-        value: function run(event, data, cb) {
-            this.client.rpc.make(event, data, cb);
-        }
-    }]);
+  }, {
+    key: "login",
+    value: function login(credentials) {
+      return this._run(_auth.default.AUTH_USER, credentials);
+    }
+  }, {
+    key: "close",
+    value: function close() {
+      return this.client.close();
+    }
+  }, {
+    key: "_run",
+    value: function _run(event, data) {
+      var _this = this;
 
-    return AuthService;
+      return new Promise(function (resolve, reject) {
+        _this.client.rpc.make(event, data, function (err, res) {
+          if (err) reject(err);
+          console.log("Received response %s", res);
+          resolve(res);
+        });
+      });
+    }
+  }]);
+
+  return AuthService;
 }();
 
 exports.default = AuthService;

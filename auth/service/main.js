@@ -1,1 +1,35 @@
-require("./build/main.js");
+require('dotenv').config()
+const deepstream = require( 'deepstream.io-client-js' );
+
+let AuthListener;
+let MongoDbDriver;
+if(process.env.NODE_ENV == 'production'){
+    AuthListener = require('./build/AuthListener').default;
+    MongoDbDriver = require('./build/MongoDbDriver').default;
+}else{
+    AuthListener = require('./src/AuthListener').default;
+    MongoDbDriver = require('./src/MongoDbDriver').default;
+}
+const client = deepstream(process.env.DEEPSTREAM_HOST);
+let service = null;
+console.log(MongoDbDriver)
+
+try{
+    MongoDbDriver.connect( (dbClient, db) => {
+        client.login(null, (success, data) => {
+            if (success) {
+                console.log("Connected as ", data);
+                service = new AuthListener(client, dbClient, db);
+                service.run();
+              
+            } else {
+                throw new Error("Unable to connect to deepstream")
+            }
+        })
+    })
+}catch(err){
+    console.log(err);
+}finally{
+    if(service != null)
+        service.close()
+}

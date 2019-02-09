@@ -6,8 +6,8 @@ export const wrapEmmiter = (func, ctx) => {
     }
 }
 
-export const wrapData = (data, ctx) => {
-    return Object.assign({}, {payload:data}, {XREQUEST: ctx.req} )
+export const wrapData = (data, request) => {
+    return Object.assign({}, {payload:data}, {XREQUEST: request} )
 }
 
 export const unWrapData = (data) => {
@@ -35,14 +35,14 @@ export const wrapReceiver = (client) => {
         client.rpc.provide(name, func)
     }
 }
-
+/*
 export const buildClient = (host, params = null) => {
     const deepstream = require( 'deepstream.io-client-js' );
     let client = deepstream(host);
     client.rpc.make = wrapEmmiter(client);
     client.rpc.provide = wrapReceiver(client)
     return client
-}
+}*/
 
 export const wrapClientEmmitterMiddleware = async ctx => {
     ctx.client.rpc.make = wrapEmmiter(ctx.client.rpc.make, ctx);
@@ -52,22 +52,30 @@ class RpcResponse{
     ctx = null;
     req = null;
     res = null;
+    rpcResponse = null;
+    constructor(rpcResponse){
+        this.rpcResponse = rpcResponse;
+    }
+    send(data){
+        this.ctx.body = data;
+    }
 }
 
 class RpcRequest{
-    ctx = null;
-    req = null;
-    res = null;
-    constructor(rawData){
-        const decoded = unWrapData(rawData);
-        this.req = rawData.request;
-        this.body = rawData.payload
+    ctx  = null;
+    req  = null; //contains original request from http server
+    res  = null; //contains original deepstream response
+    response = null;
+    body = null;
+    raw  = null;
+    constructor(body, rawData){
+        this.raw = rawData
+        this.body = body;
     }
 }
 class RpcContext{
     req = null;
     res = null;
-    body = {};
     onerror(err){
         console.log(err)
     }
@@ -83,24 +91,34 @@ export class RpcListener{
             this.events[name] = []
         }
         this.events[name] = [...this.events[name], cb]
+        return this;
     }
+
     respond(context){
-        this.res.send(this.ctx.body)
+        console.log("SENDING BACK RESPONSE")
+        console.log(context.body)
+        console.log(context.res.body)
+        if(!context.res._isAcknowledged && !context.res._isComplete)
+            context.res.send(context.body || context.res.body)
+        // don't do shit for now, let the callee respond by itself
     }
+
     handleRequest(ctx, fnMiddleware) {
         const res = ctx.res;
         res.statusCode = 404;
         const onerror = err => ctx.onerror(err);
         const handleResponse = () => this.respond(ctx);
-        onFinished(res, onerror);
         return fnMiddleware(ctx).then(handleResponse).catch(onerror);
     }
+
     createContext(req, res) {
+
         const context = new RpcContext();
-        const request = context.request = new RpcRequest(req);
-        const response = context.response = new RpcResponse();
+        const {payload, XREQUEST} = unWrapData(req);
+        let request = context.request = new RpcRequest(payload, XREQUEST);
+        let response = context.response = new RpcResponse(res);
         context.app = request.app = response.app = this;
-        context.req = request.req = response.req = req;
+        context.req = request.req = response.req = XREQUEST;
         context.res = request.res = response.res = res;
         request.ctx = response.ctx = context;
         request.response = response;
@@ -115,7 +133,7 @@ export class RpcListener{
         //if (!this.listenerCount('error')) this.on('error', this.onerror);
 
         const handleRequest = (req, res) => {
-            //const ctx = this.createContext(req, res);
+            const ctx = this.createContext(req, res);
             return this.handleRequest(ctx, fn);
         };
         return handleRequest;
@@ -124,19 +142,21 @@ export class RpcListener{
         Object.keys(this.events).map( (name) => {
             this.client.rpc.provide(name, this.callback(name))
         })
-        
+    }
+    close(){
+        return this.client.close();
     }
 }
 
-export const authoroizedMiddleware = (roles) => async (ctx, next) => {
+export const authoroizedMiddleware = (roles) => (ctx, next) => {
     if( ctx.state.user.role in roles ){
-        await next();
+        return next();
     }
     ctx.body = {
         error: "NOT_ALLOWED",
         message: "You are not allowed to view this ressources"
     };
-
+    return next();
 }
 
 export const userMiddleware = (ctx, next) => {

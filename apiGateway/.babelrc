@@ -1,13 +1,7 @@
 {
-
-    "presets": [
-      "es2017",
-      "es2015",
-      "stage-0",
-      "stage-1"
-    ],
+    "presets": ["@babel/preset-env"],
     "plugins": [
-      "transform-decorators-legacy",
-      "transform-async-to-generator"
+      ["@babel/plugin-proposal-decorators", { "legacy": true }],
+      "@babel/plugin-transform-async-to-generator",
     ]
   }

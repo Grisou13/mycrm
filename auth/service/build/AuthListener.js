@@ -1,102 +1,121 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
-exports.default = undefined;
+exports.default = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _auth = _interopRequireDefault(require("auth.events"));
 
-var _auth = require('auth.events');
+var _Auth = _interopRequireDefault(require("./Auth"));
 
-var _auth2 = _interopRequireDefault(_auth);
+var _MongoDbDriver = require("./MongoDbDriver");
 
-var _auth3 = require('./auth');
-
-var _utils = require('utils');
-
-var _utils2 = _interopRequireDefault(_utils);
+var _utils = _interopRequireDefault(require("utils"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var AuthListener = function () {
-    function AuthListener(client) {
-        _classCallCheck(this, AuthListener);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-        console.log(_utils2.default.rpc);
-        this.rpcClient = new _utils2.default.rpc.RpcListener(client);
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var AuthListener =
+/*#__PURE__*/
+function () {
+  function AuthListener(client) {
+    _classCallCheck(this, AuthListener);
+
+    this.rpcClient = new _utils.default.rpc.RpcListener(client);
+  }
+
+  _createClass(AuthListener, [{
+    key: "attachCallbacks",
+    value: function attachCallbacks(listener) {
+      var _this = this;
+
+      this.registerCallback(listener, _auth.default.AUTH_USER, function (data, response) {
+        _this.auth.login(data).then(function (token) {
+          response.send({
+            token: token
+          });
+        }).catch(function (err) {
+          response.send({
+            error: err
+          });
+        });
+      });
+      this.registerCallback(listener, _auth.default.GENERATE_TOKEN, function (data, response) {
+        var _this$auth;
+
+        (_this$auth = _this.auth).generateToken.apply(_this$auth, _toConsumableArray(data)).then(function (token) {
+          response.send({
+            token: token
+          });
+        });
+      });
+      this.registerCallback(listener, _auth.default.VALIDATE_TOKEN, function (data, response) {
+        _this.auth.validate(data).then(function (res) {
+          response.send({
+            validity: res
+          });
+        });
+      });
+      this.registerCallback(listener, _auth.default.DESTROY_TOKEN, function (data, response) {
+        _this.auth.unvalidate(data).then(function (res) {
+          response.send({
+            done: res
+          });
+        });
+      });
+      this.registerCallback(listener, _auth.default.CREATE_USER, function (data, response) {
+        _this.auth.signup(data).then(function (user) {
+          response.send({
+            userId: user._id
+          });
+        });
+      });
     }
+  }, {
+    key: "registerCallback",
+    value: function registerCallback(listener, name, cb) {
+      listener.apply(name, function (ctx) {
+        console.log(ctx.request);
+        cb(ctx.request.body, ctx.res);
+      });
+    }
+  }, {
+    key: "run",
+    value: function run() {
+      var _this2 = this;
 
-    _createClass(AuthListener, [{
-        key: 'attachCallbacks',
-        value: function attachCallbacks(listener) {
-            var _this = this;
+      _MongoDbDriver.MongoDbDriver.connect(function (dbClient, db) {
+        _this2.driver = new _MongoDbDriver.MongoDbDriver(dbClient, db);
+        _this2.auth = new _Auth.default(_this2.driver);
 
-            this.registerCallback(listener, _auth2.default.AUTH_USER, function (data, response) {
-                _this.auth.login(data, function (token) {
-                    response.send({
-                        token: token
-                    });
-                }, function (err) {
-                    response.send({
-                        error: err
-                    });
-                });
-            });
+        _this2.attachCallbacks(_this2.rpcClient);
 
-            this.registerCallback(listener, _auth2.default.GENERATE_TOKEN, function (data, response) {
-                _this.auth.generateToken(data, function (token) {
-                    response.send({
-                        token: token
-                    });
-                });
-            });
-            this.registerCallback(listener, _auth2.default.VALIDATE_TOKEN, function (data, response) {
-                _this.auth.validate(data, function (res) {
-                    response.send({
-                        validity: res
-                    });
-                });
-            });
-            this.registerCallback(listener, _auth2.default.DESTROY_TOKEN, function (data, response) {
-                _this.auth.unvalidate(data, function (res) {
-                    response.send({
-                        done: res
-                    });
-                });
-            });
+        _this2.rpcClient.run();
+      });
+    }
+  }, {
+    key: "close",
+    value: function close() {
+      this.rpcClient.close();
+      this.driver.close();
+    }
+  }]);
 
-            this.registerCallback(listener, _auth2.default.CREATE_USER, function (data, response) {
-                _this.auth.signup(data, function (userId) {
-                    response.send({
-                        userId: userId
-                    });
-                });
-            });
-        }
-    }, {
-        key: 'registerCallback',
-        value: function registerCallback(listener, name, cb) {
-            listener.apply(name, function (request, response) {
-                cb(request.body, response);
-            });
-        }
-    }, {
-        key: 'run',
-        value: function run() {
-            var _this2 = this;
-
-            _auth3.MongoDbDriver.connect(function (dbClient, db) {
-                _this2.driver = new _auth3.MongoDbDriver(dbClient, db);
-                _this2.auth = new _auth3.Auth(_this2.driver);
-                _this2.attachCallbacks(_this2.rpcClient);
-            });
-        }
-    }]);
-
-    return AuthListener;
+  return AuthListener;
 }();
 
 exports.default = AuthListener;
