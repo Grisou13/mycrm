@@ -11,7 +11,7 @@ var deepstream = require('deepstream.io-client-js');
 var app = new Koa();
 
 //rpc client setup
-var client = deepstream(process.env.DEEPSTREAM_HOST);
+var client = deepstream(process.env.EVENTHUB_HOST);
 client.login(null);
 app.context.client = client;
 app.use(utils.rpc.wrapClientEmmitterMiddleware);

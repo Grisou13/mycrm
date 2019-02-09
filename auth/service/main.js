@@ -10,7 +10,7 @@ if(process.env.NODE_ENV == 'production'){
     AuthListener = require('./src/AuthListener').default;
     MongoDbDriver = require('./src/MongoDbDriver').default;
 }
-const client = deepstream(process.env.DEEPSTREAM_HOST);
+const client = deepstream(process.env.EVENTHUB_HOST);
 let service = null;
 console.log(MongoDbDriver)
 

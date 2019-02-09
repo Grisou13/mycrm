@@ -3,7 +3,7 @@ const deepstream = require( 'deepstream.io-client-js' );
 const AuthService = require("./build/AuthService").default
 //const AuthService = require("./AuthService");
 
-const client = deepstream(process.env.DEEPSTREAM_HOST);
+const client = deepstream(process.env.EVENTHUB_HOST);
 client.login(null);
 
 var service = new AuthService(client);

@@ -7,7 +7,7 @@ const deepstream = require( 'deepstream.io-client-js' );
 const app = new Koa();
 
 //rpc client setup
-const client = deepstream(process.env.DEEPSTREAM_HOST);
+const client = deepstream(process.env.EVENTHUB_HOST);
 client.login(null);
 app.context.client = client
 const router = require('koa-router')();
