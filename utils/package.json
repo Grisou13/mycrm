@@ -22,6 +22,8 @@
     "@babel/plugin-proposal-class-properties": "^7.3.0",
     "babel-polyfill": "^6.26.0",
     "koa-compose": "^4.1.0",
+    "mongo-sanitize": "^1.0.1",
+    "sqlstring": "^2.3.1",
     "winston": "^3.2.0"
   }
 }

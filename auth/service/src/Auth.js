@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 const fs = require('fs');
+import {error} from 'utils'
 export default class Auth{
 
     constructor(driver){
@@ -34,25 +35,34 @@ export default class Auth{
         return this.driver.checkUserExists(credentials.identifier)
         .then((found) => {
             if(!found){
-                throw new Error("User not found");
+                throw new error("User not found", 404);
             }
             return this.driver.fetchUser(credentials)
         }).then( (user)=>{
-            if(user)
-                return this.generateToken(user._id);
-            throw new Error("username and password wrong")
+            console.log("LOGGING IN USER");
+            console.log(user)
+            if(user){
+                if(user.locked == false)
+                    return this.generateToken({user_id: `${user.user_id}`, role: user.role});
+                throw new error("User is locked out",401)
+            }
+            throw new error("username and password wrong", 401)
         })
     }
 
     signup(credentials){
-        return this.driver.checkUserExists(credentials.email)
-        .then( found => {
-            if(!found){
-                throw new Error("User already exists")
+        return Promise.all([
+            this.driver.checkUserExists(credentials.email),
+            this.driver.checkUserExists(credentials.username),
+        ])
+        .then( values => {
+            const found = values.every( (val) => !!val )
+            console.log(found)
+            if(found){
+                throw new error("User already exists", 409)
             }
             return this.driver.createUser(credentials)
-        })
-        
+        })        
     }
 
     unvalidate(token){
@@ -64,8 +74,22 @@ export default class Auth{
                 let cert = this.fetchCert()
                 return (jwt.verify(token, cert))
             }
-            return (false)
+            throw new error("Token not found", 404)
         })
+    }
+
+    resetPassword(email, password){
+        
+    }
+    forgotPassword(email){
+        return this.driver.checkUserExists(email).then( user => {
+            this.driver.lockoutUser(user._id).then(token => {
+                this.sendRecoveryEmail(token)
+            })
+        })
+    }
+    sendRecoveryEmail(token){
+        return true;
     }
     
 }

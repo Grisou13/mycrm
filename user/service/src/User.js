@@ -1,20 +1,20 @@
-import jwt from 'jsonwebtoken'
-const fs = require('fs');
+import {error} from 'utils'
 export default class User{
-
+    /**
+     * @var MongoDbDriver
+     */
+    driver = null;
     constructor(driver){
         this.driver = driver;
     }
 
     signup(credentials){
-        return Promise.all([
-            this.driver.checkUserExists(credentials.email),
-            this.driver.checkUserExists(credentials.username),
-        ])
-        .then( values => {
-            const found = values.every( (val) => !!val )
-            if(!found){
-                throw new Error("User already exists")
+        console.log("signing up new user ", credentials)
+        return this.driver.checkUserExists([credentials.email,credentials.username])
+        .then( found => {
+            console.log(found)
+            if(found){
+                throw new error("User already exists", 409)
             }
             return this.driver.createUser(credentials)
         })
@@ -27,7 +27,6 @@ export default class User{
     fetchAll(query){
         return this.driver.fetchAll(query)
     }
-
     
 }
 

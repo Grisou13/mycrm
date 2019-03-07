@@ -1,61 +1,55 @@
 import events from 'user.events'
 import User from './User'
-import {MongoDbDriver} from './MongoDbDriver'
 import utils from 'utils'
-import AuthService from 'auth.service/AuthService';
 
 
 export default class AuthListener{
-    constructor(client){
+    constructor(client, driver){
         this.rpcClient = new utils.rpc.RpcListener(client);
-        this.authService = new AuthService(client);
+        this.driver = driver;
+        this.user = new User(this.driver)
+        this.attachCallbacks(this.rpcClient)
+        console.log(events)
     }
 
     attachCallbacks(listener){
-        this.registerCallback(listener, events.CREATE_USER, (data, response) => {
-            this.user.signup(data)
-            .then( user => {
-                return Promise.all([
-                    new Promise ( resolve => resolve(user)),
-                    this.authService.signup({user_id: user._id,...data}),
-                ])
-                
-            }).then( ([user, _]) => {
-                return this.authService.generateToken({user_id: user._id}).then( (token) => {
-                    console.log("CREATED USER: ")
-                    console.log(user)
-                    response.send({user, token})
-                })
-                
+        this.registerCallback(listener, events.CREATE_USER, (data) => {
+            return this.user.signup(data).then(user => {
+                console.log("Created user")
+                console.log(user)
+                return user
             })
         })
-        this.registerCallback(listener, events.FETCH_USER, (data, response) => {
-            this.user.fetch(data).then( user => {
-                response.send(user)
-            })
+        this.registerCallback(listener, events.FETCH_USER, (data) => {
+            return this.user.fetch(data.user_id)
         })
-        this.registerCallback(listener, events.FETCH_ALL_USERS, (data, response) => {
-            this.user.fetchAll(data || {}).then( users => {
-                response.send(users)
+        this.registerCallback(listener, events.FETCH_ALL_USERS, (data) => {
+            console.log("FETCHING ALL USERS")
+            return this.user.fetchAll(data || {}).then( users => {
+                console.log(users)
+                return users
             })
         })
     }
 
     registerCallback(listener, name, cb){
         listener.apply( name, ( ctx ) => {
-            console.log(ctx.request)
-
             cb(ctx.request.body, ctx.res)
+            .then( res => ctx.res.send(res))
+            .catch(err => {
+                console.log(`Error while treating ${name}`)
+                console.log(err)
+                if(err instanceof utils.error){
+                    ctx.res.error(err.toString())
+                }
+                else
+                    ctx.res.error(`${err}`)
+            })
         });
     }
 
     run(){
-        MongoDbDriver.connect( (dbClient, db) => {
-            this.driver = new MongoDbDriver(dbClient, db);
-            this.user = new User(this.driver)
-            this.attachCallbacks(this.rpcClient)
-            this.rpcClient.run()
-        })
+        this.rpcClient.run()
     }
     close(){
         this.rpcClient.close();

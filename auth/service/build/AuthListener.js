@@ -9,7 +9,7 @@ var _auth = _interopRequireDefault(require("auth.events"));
 
 var _Auth = _interopRequireDefault(require("./Auth"));
 
-var _MongoDbDriver = require("./MongoDbDriver");
+var _MongoDbDriver = _interopRequireDefault(require("./MongoDbDriver"));
 
 var _utils = _interopRequireDefault(require("utils"));
 
@@ -32,10 +32,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var AuthListener =
 /*#__PURE__*/
 function () {
-  function AuthListener(client) {
+  function AuthListener(client, driver) {
     _classCallCheck(this, AuthListener);
 
     this.rpcClient = new _utils.default.rpc.RpcListener(client);
+    this.driver = driver;
+    this.auth = new _Auth.default(this.driver);
+    this.attachCallbacks(this.rpcClient);
   }
 
   _createClass(AuthListener, [{
@@ -96,16 +99,7 @@ function () {
   }, {
     key: "run",
     value: function run() {
-      var _this2 = this;
-
-      _MongoDbDriver.MongoDbDriver.connect(function (dbClient, db) {
-        _this2.driver = new _MongoDbDriver.MongoDbDriver(dbClient, db);
-        _this2.auth = new _Auth.default(_this2.driver);
-
-        _this2.attachCallbacks(_this2.rpcClient);
-
-        _this2.rpcClient.run();
-      });
+      this.rpcClient.run();
     }
   }, {
     key: "close",

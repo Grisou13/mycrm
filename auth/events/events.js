@@ -3,5 +3,5 @@ module.exports = {
     GENERATE_TOKEN: 'generate-token',
     VALIDATE_TOKEN: 'validate-token',
     DESTROY_TOKEN: 'destroy-token',
-    CREATE_USER: 'create-user',
+    CREATE_USER: 'signup',
 }

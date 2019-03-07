@@ -1,0 +1,7 @@
+const utils = require("utils");
+
+module.exports = (router) => {
+    router.{{method}}({{name}}, {{path}}, async (ctx, next) => {
+        ctx.body = await ctx.dispatch({{url}})
+    })
+}

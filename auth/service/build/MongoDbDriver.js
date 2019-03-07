@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.MongoDbDriver = void 0;
+exports.default = void 0;
 
 var _mongodb = require("mongodb");
 
@@ -156,4 +156,4 @@ function () {
   return MongoDbDriver;
 }();
 
-exports.MongoDbDriver = MongoDbDriver;
+exports.default = MongoDbDriver;

@@ -1,3 +1,4 @@
+import Role from './Role'
 export default class User{
     _id;
     username;
@@ -13,6 +14,7 @@ export default class User{
         user.username   = data.username || null;
         user.email      = data.email    || null;
         user.deleted    = data.deleted  || null;
+        user.role       = data.role ? Role.build(data.role) : null;
         return user;
     }
 }

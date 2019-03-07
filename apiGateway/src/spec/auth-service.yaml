@@ -1,0 +1,22 @@
+- name: Auth
+  path: /auth
+  actions:
+    - name: createUser
+      internal: true
+      path: /users
+      method: POST
+      url: "rpc://@auth/CREATE-USER"
+      fields:
+        - name: username
+          type: string
+        - name: email
+          type: string
+        - name: password
+          type: string
+    
+    - name: createToken
+      path: /sessions/create
+      url: "rpc://@auth/LOGIN"
+    - name: revokToken
+      path: /sessions/delete
+      url: "rpc://@auth/DESTROY"

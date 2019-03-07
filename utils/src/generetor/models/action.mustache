@@ -1,0 +1,27 @@
+const utils = require("utils");
+{{#model}}
+  const model{{name}} = require("../data/{{name}}").{{name}};
+  const validator = require("../data/{{name}}").validator
+{{/model}}
+{{#fields?}}
+  const model{{name}} = utils.rpc.Model
+  const validator = utils.validation.createValidator({{fields}})
+{{/fields?}}
+
+const builder = utils.rpc.modelBuilder( validator, model{{name}} )
+
+
+const action = asnyc (ctx, next) => {
+  const dataModel = builder(ctx)
+  // do something with your model, like persist it to db
+  // if(!dataModel) throw new ValidationError(dataModel.errors);
+  // const model = require("./models/{{name}}")
+  // const new{{name}} = new model(dataModel.toObj())
+  return next();
+}
+{{#action}}
+module.exports = (rpc) => {
+  rpc.apply({{name}}, action);
+  return rpc;
+} 
+{{/action}}

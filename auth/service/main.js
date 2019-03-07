@@ -1,6 +1,5 @@
 require('dotenv').config()
 const deepstream = require( 'deepstream.io-client-js' );
-
 let AuthListener;
 let MongoDbDriver;
 if(process.env.NODE_ENV == 'production'){
@@ -19,7 +18,8 @@ try{
         client.login(null, (success, data) => {
             if (success) {
                 console.log("Connected as ", data);
-                service = new AuthListener(client, dbClient, db);
+                const driver = new MongoDbDriver(dbClient, db)
+                service = new AuthListener(client, driver);
                 service.run();
               
             } else {

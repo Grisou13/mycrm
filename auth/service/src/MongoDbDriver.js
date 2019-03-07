@@ -40,6 +40,9 @@ export default class MongoDbDriver{
         })
     }
     checkUserExists(identifier){
+        if(identifier instanceof Array){
+            identifier = { $in: identifier }
+        }
         return new Promise( (resolve,reject) => {
             this.db.collection("users").findOne({ $or: [ {"email": identifier},{"username": identifier} ]}, function(err, r){
                 if(err) return reject(err);
@@ -56,6 +59,7 @@ export default class MongoDbDriver{
             token
         })
     }
+
     resignToken(token){
         return new Promise( (resolve, reject) => {
             const res = this.db.collection("tokens").remove({
@@ -72,6 +76,7 @@ export default class MongoDbDriver{
         })
         
     }
+
     checkIfTokenExists(token){
         return new Promise( (reject, resolve) => {
             this.db.collection("tokens").findOne({token: token}, (err, r) => {
@@ -84,13 +89,41 @@ export default class MongoDbDriver{
             })
         })
     }
+    lockoutUser(user_id){
+        return new Promise( (resolve, reject) => {
+            this.db.collection("users").updateOne({
+                "user_id": new ObjectID(user_id)
+            },{
+                $set:{
+                    locked: true
+                }
+            }, (err, res) =>{
+                if(err) return reject(err);
+                if(res.ok){
+                    //should we invalidate all tokens of user?
+                    this.db.collection("tokens").deleteMany({
+                        "user_id": new ObjectID(user_id)
+                    }, (err,res) => {
+                        if(res.ok)
+                            return resolve(true);
+                        reject(false);
+                    })
+                }
+                
+            })
+            
+
+        })
+    }
     createUser(data){
-        return new Promise( (reject, resolve) => {
+        return new Promise( (resolve, reject) => {
             const newUser = {
                 user_id: data.user_id || null,
                 username: data.username,
                 email: data.email,
-                password: this._encodePassword(data.password)
+                role: data.role || null,
+                password: this._encodePassword(data.password),
+                locked: false,
             }
             this.db.collection("users").insertOne(newUser, function(err, r){
                 if(err) reject(err)

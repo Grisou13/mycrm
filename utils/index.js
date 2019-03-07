@@ -1,4 +1,4 @@
-if (!global._babelPolyfill && !window._babelPolyfill) { 
+if (!global._babelPolyfill) { 
     require("babel-polyfill");
 }
 module.exports = require("./build").default

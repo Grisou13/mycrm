@@ -1,5 +1,5 @@
 import compose from 'koa-compose'
-
+import sanitize from './sanitize'
 export const wrapEmmiter = (func, ctx) => {
     return (name,data) => {
         func(name, wrapData(data,ctx))
@@ -19,34 +19,6 @@ export const unWrapData = (data) => {
     }
 }
 
-export const unwrappFunc = (cb) => {
-    return ( d, response ) => {
-        const data = unWrapData(d);
-        cb(data.payload, data.request ,response)
-    }
-}
-
-export const wrapReceiver = (client) => {   
-    return (name, cb) => {
-        const func = ( d, response ) => {
-            const data = unWrapData(d);
-            cb(data.payload, data.request ,response)
-        }
-        client.rpc.provide(name, func)
-    }
-}
-/*
-export const buildClient = (host, params = null) => {
-    const deepstream = require( 'deepstream.io-client-js' );
-    let client = deepstream(host);
-    client.rpc.make = wrapEmmiter(client);
-    client.rpc.provide = wrapReceiver(client)
-    return client
-}*/
-
-export const wrapClientEmmitterMiddleware = async ctx => {
-    ctx.client.rpc.make = wrapEmmiter(ctx.client.rpc.make, ctx);
-}
 
 class RpcResponse{
     ctx = null;
@@ -70,6 +42,9 @@ class RpcRequest{
     raw  = null;
     constructor(body, rawData){
         this.raw = rawData
+        Object.keys(rawData).forEach( k => {
+            this[k] = rawData[k]
+        })
         this.body = body;
     }
 }
@@ -78,6 +53,32 @@ class RpcContext{
     res = null;
     onerror(err){
         console.log(err)
+    }
+}
+
+export const modelBuilder = (validator, modelKlass) => (data) => {
+    const model = modelKlass.build(data);
+    const result = await validator.validate(model.toObj())
+    return result == true? model : null;
+}
+export class Model{
+    data = {};
+    _raw = {};
+    static fields;
+    constructor(data){
+        this._raw = data
+        this.sanitize()
+    }
+    sanitize(){
+        this.data = sanitize(this._raw)
+    }
+    
+    static build( data ){
+        const m = new Model(data);
+        return m;
+    }
+    toObj(){
+        return this.data;
     }
 }
 
@@ -114,7 +115,7 @@ export class RpcListener{
     createContext(req, res) {
 
         const context = new RpcContext();
-        const {payload, XREQUEST} = unWrapData(req);
+        const {payload, XREQUEST} = req;
         let request = context.request = new RpcRequest(payload, XREQUEST);
         let response = context.response = new RpcResponse(res);
         context.app = request.app = response.app = this;
@@ -145,6 +146,19 @@ export class RpcListener{
     }
     close(){
         return this.client.close();
+    }
+}
+
+export class RpcService {
+    constructor(rpcListener){
+        this.rpcListener = rpcListener;
+    }
+    
+    apply(name, cb){
+        this.rpcListener.apply(name,cb);
+    }
+    run(){
+        this.rpcListener.run();
     }
 }
 

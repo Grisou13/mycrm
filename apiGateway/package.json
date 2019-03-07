@@ -21,9 +21,11 @@
   },
   "dependencies": {
     "auth.events": "file:../auth/events",
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "deepstream.io-client-js": "^2.3.0",
     "dotenv": "^6.1.0",
+    "js-yaml": "^3.12.1",
     "jsonwebtoken": "^8.4.0",
     "koa": "^2.7.0",
     "koa-body": "^4.0.7",

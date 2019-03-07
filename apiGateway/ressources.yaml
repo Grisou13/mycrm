@@ -1,0 +1,54 @@
+
+- name: Auth
+  path: /auth
+  models:
+    - name: User
+      fields:
+        - name: username
+          type: string
+        - name: email
+          type: string
+        - name: password
+          type: string
+        
+  actions:
+    - name: createUser
+      path: /users
+      method: POST
+      url: "rpc://@auth/CREATE-USER"
+      model: User
+    
+    - name: createToken
+      path: /sessions/create
+      url: "rpc://@auth/LOGIN"
+    - name: revokToken
+      path: /sessions/delete
+      url: "rpc://@auth/DESTROY"
+
+#-- by default method field is GET
+#-- by default validation is empty
+#-- validation rules are : [
+#     required
+#     internal // which means that this field should only be supplied if the request is internal
+#     url
+#     email
+#]
+#- name: $NAME
+# path: /$NAME
+# models:
+#   - name: MODELNAME
+#     fields:
+#       - name: FIELDNAME
+#         type: string
+#         validation: "validation rules here"
+# actions:
+#   - name: create$NAME
+#     path: /$name
+#     internal: bool //defines if a request is used internally and shouldn't be accessed by anybody else
+#     method: POST
+#     url: "rpc://@$NAME/CREATE-$NAME"
+#     model: ${Name} //either define a model for the request or explicit fields
+#     fields: 
+#       - name: name
+#         type: string
+#         validation: "required"

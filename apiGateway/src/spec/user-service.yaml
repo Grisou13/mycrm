@@ -1,0 +1,25 @@
+- name: Users
+  path: /users
+  actions:
+    - name: createUser
+      path: /
+      internal: true
+      url: "rpc://@users/CREATE-USER"
+      fields: 
+        - name: username
+          type: string
+        - name: email
+          type: string
+          attributes:
+            - personal_data
+        - name: role
+          type: string
+          validation: "not_required | internal"
+          
+    - name: findUserById
+      path: /:user_id
+      url: "rpc://@users/FIND-USERS-BY-ID"
+      
+    - name: findAll
+      path: /
+      url: "rpc://@users/FIND-USERS"

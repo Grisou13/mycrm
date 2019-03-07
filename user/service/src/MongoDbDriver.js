@@ -1,7 +1,9 @@
 import { MongoClient, ObjectID } from 'mongodb'
 import User from './models/User'
 
-export class MongoDbDriver{
+
+
+export default class MongoDbDriver{
     constructor(client, db){
         this.db = db
         this.client = client;
@@ -25,21 +27,28 @@ export class MongoDbDriver{
     close(){
         return this.client.close();
     }
-    fetchUser(credentials){
+    fetchUser(id){
         return new Promise( (resolve, reject) => {
-            this.db.collection("users").findOne({
-                $or: [ 
-                    {"email":credentials.identifier},
-                    {"username":credentials.identifier} 
-                ]
-            }, (err, r)=>{
-                if(err) reject(err)
-                resolve(User.build(r))
-            })
+            try{
+                this.db.collection("users").findOne({
+                    "_id": new ObjectID(id),
+                }, (err, r)=>{
+                    
+                    if(err) return reject(err)
+                    if(r!=null)
+                        resolve(User.build(r))
+                    reject("User not found")
+                })
+            }catch(err){
+                reject("Id not valid")
+            }
         })
     }
     checkUserExists(identifier){
         return new Promise( (resolve,reject) => {
+            if(identifier instanceof Array){
+                identifier = { $in: identifier }
+            }
             this.db.collection("users").findOne({ $or: [ {"email": identifier},{"username": identifier} ]}, function(err, r){
                 if(err) return reject(err);
                 if(r)
@@ -51,22 +60,31 @@ export class MongoDbDriver{
     
    
     createUser(data){
-        return new Promise( (reject, resolve) => {
-            const newUser = {
-                user_id: data.user_id || null,
-                username: data.username,
-                email: data.email,
-                password: this._encodePassword(data.password)
-            }
-            this.db.collection("users").insertOne(newUser, function(err, r){
-                if(err) reject(err)
-                resolve(User.build(r.ops[0]))
-            })
+        return new Promise( (resolve, reject) => {
+            //this.db.collection("roles").findOne({name:"user"}, function(err,role){
+                const newUser = {
+                    username: data.username,
+                    email: data.email,
+                    role: data.role ? data.role: "user"
+                }
+                this.db.collection("users").insertOne(newUser, function(err, r){
+                    console.log("IN DATABASE")
+                    console.log(r.ops[0])
+                    console.log("errors?")
+                    console.log(err)
+                    if(err) reject(err)
+                    resolve(User.build(r.ops[0]))
+                })
+            //})
+            
         })  
     }
-    fetchAll(...args){
+    fetchAll(query){
         return new Promise( (resolve, reject) => {
-            this.db.collection("users").find(...args)
+            this.db.collection("users").find(query).toArray( (err, res) => {
+                if(err) reject(err)
+                resolve(res)
+            })
         })
     }
     updateUser(user_id, update){

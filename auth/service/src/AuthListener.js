@@ -5,9 +5,9 @@ import utils from 'utils'
 
 
 export default class AuthListener{
-    constructor(client, dbClient, db){
+    constructor(client, driver){
         this.rpcClient = new utils.rpc.RpcListener(client);
-        this.driver = new MongoDbDriver(dbClient, db);
+        this.driver = driver;
         this.auth = new Auth(this.driver)
         this.attachCallbacks(this.rpcClient)
     }
@@ -27,7 +27,7 @@ export default class AuthListener{
         });
         
         this.registerCallback(listener, events.GENERATE_TOKEN, ( data, response ) => {
-            this.auth.generateToken(...data)
+            this.auth.generateToken(data.user_id)
             .then( (token) => {
                 response.send( {
                     token
@@ -66,6 +66,14 @@ export default class AuthListener{
             console.log(ctx.request)
 
             cb(ctx.request.body, ctx.res)
+            .catch(err => {
+                console.log(`Error while treating ${name}`)
+                console.log(err)
+                if(err instanceof utils.error)
+                    ctx.res.error(err.toString())
+                else
+                    ctx.res.error(`${err}`)
+            })
         });
     }
 
