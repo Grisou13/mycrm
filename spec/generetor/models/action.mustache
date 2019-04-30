@@ -1,17 +1,17 @@
 const utils = require("utils");
 {{#model}}
-  const model{{name}} = require("../data/{{name}}").{{name}};
-  const validator = require("../data/{{name}}").validator
+const model{{name}} = require("../data/{{name}}").{{name}};
+const validator = require("../data/{{name}}").validator;
 {{/model}}
 {{#fields?}}
-  const model{{name}} = utils.rpc.Model
-  const validator = utils.validation.createValidator({{fields}})
+  const model{{name}} = utils.rpc.Model;
+  const validator = utils.validation.createValidator({{{.}}});
 {{/fields?}}
 
-const builder = utils.rpc.modelBuilder( validator, model{{name}} )
+const builder = utils.rpc.modelBuilder( validator, model{{name}} );
 
 
-const action = asnyc (ctx, next) => {
+const action = async (ctx, next) => {
   const dataModel = builder(ctx)
   // do something with your model, like persist it to db
   // if(!dataModel) throw new ValidationError(dataModel.errors);
@@ -20,8 +20,10 @@ const action = asnyc (ctx, next) => {
   return next();
 }
 module.exports = {
-  path: {{action.path}},
+  path: "{{{path}}}",
   callback: action,
-  schema: {{action.schema}},
-  method: {{action.method}} //can be empty since an rpc action 
+  schema: "{{schema}}",
+  {{#isRpc}}
+  method: "{{method}}" //can be empty since an rpc action 
+  {{/isRpc}}
 } 

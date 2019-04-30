@@ -1,11 +1,11 @@
-- name: Signup
-  path: /signup
-  actions:
-    - name: createSignup
-      path: /
-      method: POST
-      url: "rpc://@signup/CREATE-SIGNUP"
-      fields: 
-        - name: name
-          type: string
-          validation: "required"
+name: Signup
+path: /signup
+actions:
+  - name: createSignup
+    path: /
+    method: POST
+    url: "rpc://@signup/CREATE-SIGNUP"
+    fields: 
+      - name: name
+        type: string
+        validation: "required"

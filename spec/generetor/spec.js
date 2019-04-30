@@ -34,12 +34,17 @@ class Spec{
         }
         return doc
     }
+
+    getName(){
+        return this.spec.name
+    }
     
     getApiUrls(){
         return this.spec.actions.map( (action) => {
             return {
-                path: this.spec.path + "/" + action.path,
-                name: this.spec.name + ":" + action.name,
+                path: this.spec.path + (action.path[0] === "/" ? "": "/") + action.path,
+                fullname: this.spec.name + ":" + action.name,
+                name: action.name,
                 method: action.method,
                 url: action.url,
                 baseUrl: this.spec.path,
@@ -48,6 +53,7 @@ class Spec{
     }
     getSchema(url){
         let res = schemaRegex.exec(url)
+        console.log(url)
         let schema = res.result[1];
         let method = null;
         if(schema.trim() != "rpc"){
@@ -61,7 +67,7 @@ class Spec{
             url
         }
     }
-    buildInternalPathForAction(schema, specName, name, version){
+    buildInternalPathForAction(schema, specName, name, version = null){
         let str = "";
         if(schema == "rpc"){
             str += "@";
@@ -73,9 +79,10 @@ class Spec{
         return str;
     }
     getActions(){
-        return this.specs.actions.map((action)=>{
-            let res = this.schemaRegex.exec(url)
-            let schema = res.result[1];            
+        return this.spec.actions.map((action)=>{
+            let matches = schemaRegex.exec(action.url)
+            console.log(matches)
+            let schema = matches[1];            
             return {
                 name: action.name,
                 path: this.buildInternalPathForAction(schema, this.spec.name, action.name, action.version),
@@ -92,7 +99,7 @@ class Spec{
         }
     }
     getDataModels(){
-        return this.spec.models;
+        return this.spec.models || [];
     }
     toObj(){
         return {
@@ -101,12 +108,9 @@ class Spec{
                 return {...action,
                     "model?": action.model != null ? {
                         model: action.model
-                    } : null,
-                    "fields?": action.fields != null?{
-                        fields: action.fields,
-                        name: action.name,
-                    }:null,
-                    "isRpc?": action.schema == "rpc",
+                    } : false,
+                    "fields?": action.fields != null? JSON.stringify(action.fields): false,
+                    "isRpc": action.schema == "rpc",
                 }
             }),
             urls: this.getApiUrls(),

@@ -1,7 +1,7 @@
 const utils = require("utils")
 
 export class {{name}} extends utils.rpc.model{
-    static fields = {{fields}}
+    static fields = {{{fields?}}}
 }
 
 export const validator = utils.validation.createValidator({{name}}.fields)

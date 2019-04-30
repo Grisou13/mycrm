@@ -4,15 +4,15 @@ const utils = require("utils");
   const validator = require("../data/{{name}}").validator
 {{/model}}
 {{#fields?}}
-  const model{{name}} = utils.rpc.Model
-  const validator = utils.validation.createValidator({{fields}})
+  const model{{name}} = utils.rpc.Model;
+  const validator = utils.validation.createValidator({{{.}}});
 {{/fields?}}
 
 module.exports = (router) => {
-    router.{{method}}({{name}}, {{path}}, async (ctx, next) => {
+    router.{{method}}("{{fullname}}", "{{{path}}}", async (ctx, next) => {
         const res = validator.validate(ctx)
         if(res){
-            ctx.body = await ctx.dispatch({{url}})
+            ctx.body = await ctx.dispatch("{{{url}}}")
         }
         else{
             throw new utils.error.validationError(res)

@@ -1,17 +1,14 @@
-const utils = require("utils);
+const utils = require("utils");
 {{#actions}}
-  const Action{{name}} = require("./actions/{{name}}.js");
+const Action{{name}} = require("./actions/{{name}}.js");
 {{/actions}}
 
 const {{service.name}}Service = new utils.rpc.Service("{{name}}")
 
 {{#actions}}
-  {{isRpc?}}
-    {{service.name}}Service.addAction(Action{{name}})
-  {{/isRpc?}}
-  {{^isRpc?}}
-    {{service.name}}Service.addUrl(Action{{name}})
-  {{/isRpc?}}
+  {{#isRpc}}
+{{service.name}}Service.addAction(Action{{name}})
+  {{/isRpc}}
 {{/actions}}
 
 
