@@ -19,9 +19,9 @@ const action = asnyc (ctx, next) => {
   // const new{{name}} = new model(dataModel.toObj())
   return next();
 }
-{{#action}}
-module.exports = (rpc) => {
-  rpc.apply({{name}}, action);
-  return rpc;
+module.exports = {
+  path: {{action.path}},
+  callback: action,
+  schema: {{action.schema}},
+  method: {{action.method}} //can be empty since an rpc action 
 } 
-{{/action}}

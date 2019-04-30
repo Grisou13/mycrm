@@ -86,6 +86,7 @@ export class RpcListener{
     constructor(client){
         this.client = client;
         this.events = {};
+        this.middlewares = [];
     }
     apply(name, cb){
         if(!this.events[name]){
@@ -94,7 +95,9 @@ export class RpcListener{
         this.events[name] = [...this.events[name], cb]
         return this;
     }
-
+    applyGlobal(cb){
+        this.middlewares = [cb,...this.middlewares]
+    }
     respond(context){
         console.log("SENDING BACK RESPONSE")
         console.log(context.body)
@@ -130,7 +133,7 @@ export class RpcListener{
     }
     callback(eventName){
 
-        const fn = compose(this.events[eventName]);
+        const fn = compose([ ...this.middlewares ,...this.events[eventName] ]);
         //if (!this.listenerCount('error')) this.on('error', this.onerror);
 
         const handleRequest = (req, res) => {
@@ -149,9 +152,10 @@ export class RpcListener{
     }
 }
 
-export class RpcService {
-    constructor(rpcListener){
+export class Service {
+    constructor(rpcListener, httpListener){
         this.rpcListener = rpcListener;
+        this.httpListener = httpListener;
     }
     
     apply(name, cb){
@@ -159,6 +163,20 @@ export class RpcService {
     }
     run(){
         this.rpcListener.run();
+        this.httpListener.run();
+    }
+    addAction(actionConfig){
+        this.rpcListener.apply(actionConfig.path, actionConfig.callback);
+        return this;
+    }
+    addUrl(urlConfig){
+        this.httpListener.router[urlConfig.method](urlConfig.name, urlConfig.path, urlConfig.callback);
+    }
+    addHttpMiddleware(callback){
+        this.httpListener.server.apply(callback);
+    }
+    addRpcMiddleware(callback){
+        this.rpcListener.applyGlobal(callback);
     }
 }
 
@@ -180,10 +198,4 @@ export const userMiddleware = (ctx, next) => {
         ctx.state.token = request.TOKEN;
     }
     next();
-}
-
-const usageMiddleware = (ctx, next) => {
-    //handle some data
-    // ctx.body = ....somedata
-    // next()
 }

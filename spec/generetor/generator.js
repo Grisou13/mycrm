@@ -2,7 +2,9 @@ const fs = require('fs-extra-promise');
 const path = require('path');
 const mustache = require('mustache');
 
-const render = (path, options, dest) => {
+const templatesDir = path.resolve("./models")
+
+const render = async (path, options, dest) => {
     // Paths
     const sourcePath = path.resolve(path);
     //const distFile = mustache.render(file, options).replace('.mustache', '.js');
@@ -18,19 +20,39 @@ const render = (path, options, dest) => {
     }
 }
 
+const _templateFile = (serviceName) => path.resolve(templatesDir,serviceName+".mustache")
+
+const createService = (spec, target) => {
+    render(_templateFile("service"), spec, path.resolve(target, "service.js"));
+}
+
+const createAction = (spec, target) => {
+
+}
+
+const createDataModel = (spec, target) => {
+
+}
+
+const createUrl = (spec, target) => {
+
+}
+
+
+
+
 module.exports = async (args,opts,logger) => {
     const options = {
         target: path.resolve(args.path, args.name),
         specName: args.name,
-        
-      };
+    };
     const spec = new spec(options.specName);
     const name = spec.getName();
     // Create directory
     await fs.mkdirAsync(options.target);
     
     //create the base service
-    render(path.resolve(templatesDir,"service.mustache"), spec, path.resolve(options.target, "service.js"));
+    createService(spec.getService());
 
     //create actions
     spec.getActions().forEach( (action) => {

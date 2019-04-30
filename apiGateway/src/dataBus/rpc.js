@@ -1,7 +1,7 @@
 export class RpcBus{
     static schema = "rpc";
-    constructor(client){
-        this.cleint = client;
+    constructor(app){
+        this.cleint = app.rpcClient;
     }
     send(url, request){
         return new Promise( (resolve, reject) => {

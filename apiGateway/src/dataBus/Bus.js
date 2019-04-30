@@ -1,11 +1,11 @@
 import {HttpBus} from './http'
 import {RpcBus} from './rpc'
 export class Bus{
-    schemaRegex = /(.*)(:\/\/)(.*$)/gm;
+    schemaRegex = /(.*)(?::\/\/)(.*$)/gm;
     constructor(app){
         this.proxies = {
-            [HttpBus.schema]: HttpBus(app.httpClient),
-            [RpcBus.schema]: RpcBus(app.rpcClient),
+            [HttpBus.schema]: HttpBus(app),
+            [RpcBus.schema]: RpcBus(app),
         };
     }
     getSchema(url){
@@ -14,7 +14,7 @@ export class Bus{
     }
     getUrl(url){
         const res = this.schemaRegex.exec(url)
-        return res.result[3];
+        return res.result[2];
     }
     
     run(url, request){

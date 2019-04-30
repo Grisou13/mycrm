@@ -1,8 +1,0 @@
-const utils = require("utils);
-{{#actions}}
-  const Action{{name}} = require("./actions/{{name}}.js");
-{{/actions}}
-
-const {{name}}Service = new utils.rpc.Service("{{name}}")
-
-{{name}}Service.run();

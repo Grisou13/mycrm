@@ -4,7 +4,7 @@
 
  class ProxyRequest{
      constructor(ctx){
-        const payload = Object.assign({}, ctx.params, ctx.request.body, ctx.request.query);
+        const payload = Object.assign({}, ctx.request.body, ctx.request.query);
         const request = {
           method: ctx.request.method, 
           url: ctx.request.url,
@@ -12,6 +12,9 @@
           "content-type": ctx.request["content-type"],
           user: ctx.request.user,
           body: payload,
+          query: ctx.query,
+          params: ctx.params,
+          cookies: ctx.cookies,
         };
         this.request = request;
         this.payload = payload;
@@ -24,11 +27,11 @@
          this.requres.headers = headers;
      }
      serialize(){
-         return {
-             payload: this.payload,
-             XREQUEST: this.request
-         }
-     }
+        return {
+            payload: this.payload,
+            XREQUEST: this.request
+        }
+    }
 }
 
 export default () => async (ctx, next) => {

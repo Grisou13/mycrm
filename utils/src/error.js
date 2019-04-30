@@ -72,5 +72,8 @@ export class HttpError extends Error{
     
 }
 
-
+export const validationError = (errors) => {
+    const msg = JSON.stringify(errors)
+    return new HttpError(msg, 400);
+}
 export default HttpError;
