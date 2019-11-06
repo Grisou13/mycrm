@@ -679,7 +679,7 @@ atob@^2.1.1:
 "auth.events@file:../events":
   version "1.0.0"
   dependencies:
-    utils "file:../../../../../home/thomas/.cache/yarn/utils"
+    utils "file:../../utils"
 
 babel-polyfill@^6.26.0:
   version "6.26.0"
@@ -1727,8 +1727,8 @@ minizlib@^1.1.1:
     minipass "^2.2.1"
 
 mixin-deep@^1.2.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.1.tgz#a49e7268dce1a0d9698e45326c5626df3543d0fe"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.2.tgz#1120b43dc359a785dce65b55b82e257ccf479566"
   dependencies:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
@@ -1738,6 +1738,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
     minimist "0.0.8"
+
+mongo-sanitize@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mongo-sanitize/-/mongo-sanitize-1.0.1.tgz#23fb7eb33a97bbfc8219e6f41a889a4b96c4a850"
 
 mongodb-core@3.1.11:
   version "3.1.11"
@@ -2425,6 +2429,10 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
+sqlstring@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.1.tgz#475393ff9e91479aea62dcaf0ca3d14983a7fb40"
+
 stack-trace@0.0.x:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
@@ -2643,6 +2651,8 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
     "@babel/plugin-proposal-class-properties" "^7.3.0"
     babel-polyfill "^6.26.0"
     koa-compose "^4.1.0"
+    mongo-sanitize "^1.0.1"
+    sqlstring "^2.3.1"
     winston "^3.2.0"
 
 v8flags@^3.1.1:
