@@ -1,9 +1,12 @@
 const mod = require("./index")
 
-const spec = new mod.parser(__dirname+"/specs/signup-service.yaml");
+//const spec = new mod.parser(__dirname+"/specs/auth-service.yaml");
 
 mod.generate({
-   to: "test_spec/",
+   to: "test_api/file",
    from: __dirname+"/specs/", 
-   name: "signup-service.yaml"
+   name: "file-service.yaml"
+},
+{
+   api: true
 })

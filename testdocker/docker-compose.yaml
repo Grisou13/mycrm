@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  consul:
+    image: consul:latest
+    networks:
+      - app-network
+    command: "consul agent -server -retry-join consul-server-bootstrap -client 0.0.0.0"  
+  db:
+    image: Db.Dockerfile
+    networks:
+      - app-network
+    depends_on:
+      -consul
+  app:
+    build: App.Dockerfile
+    command: node app.js
+    networks:
+      - app-network
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - consul
+  

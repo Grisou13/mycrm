@@ -3,7 +3,7 @@ const path = require('path');
 const mustache = require('mustache');
 const Parser = require("./spec")
 
-const templatesDir = path.resolve(__dirname, "./models")
+const templatesDir = path.resolve(__dirname, "templates")
 
 const render = async (sourcePath, options, distPath) => {
     // Paths
@@ -50,22 +50,27 @@ const createEnv = (spec, target) => {
 
 const mkdir = async (path) => {
     try {
-        await fs.mkdirAsync(path);
+        await fs.promises.mkdir(path, { recursive: true });
     } catch (err) {
         if (err.code !== 'EEXIST') throw err
     }
 }
 
-module.exports = async (args,opts,logger) => {
-    const options = {
-        target: path.resolve(args.to),
-        specName: args.name,
-        specPath: path.resolve(args.from, args.name)
-    };
+module.exports = async (options) => {
+    
     const spec = new Parser(options.specPath).toObj();
     // Create directory
     mkdir(options.target)
-
+    if(options.createApiRoutes){
+        //create urls
+        mkdir(path.resolve(options.target, spec.service.name))
+        spec.urls.forEach( (url) => {
+            let dist = path.resolve(options.target, spec.service.name, url.name+".js");
+            createUrl(url, dist)
+            // render( path.resolve(templatesDir,"action.mustache"), action, dist )
+        })
+        return;
+    }
     //create the base service
     createService(spec, options.target);
     createMain(spec, options.target)
@@ -80,16 +85,10 @@ module.exports = async (args,opts,logger) => {
     //create models
     mkdir(path.resolve(options.target, "dataModels"))
     spec.dataModels.forEach( (model) => {
-        let dist = path.resolve(options.target, "dataModel", model.name+".js");
-        createDataModel(action, dist)
+        let dist = path.resolve(options.target, "dataModels", model.name+".js");
+        createDataModel(model, dist)
         // render( path.resolve(templatesDir,"action.mustache"), action, dist )
     })
 
-    //create models
-    mkdir(path.resolve(options.target, "urls"))
-    spec.urls.forEach( (url) => {
-        let dist = path.resolve(options.target, "urls", url.name+".js");
-        createUrl(url, dist)
-        // render( path.resolve(templatesDir,"action.mustache"), action, dist )
-    })
+    
 }

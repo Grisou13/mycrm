@@ -1,22 +1,22 @@
 
-- name: Auth
-  path: /auth
-  models:
-    - name: User
-      fields:
-        - name: username
-          type: string
-        - name: email
-          type: string
-        - name: password
-          type: string
-        
-  actions:
-    - name: createUser
-      path: /users
-      method: POST
-      url: "rpc://@auth/CREATE-USER"
-      model: User
+name: Auth
+path: /auth
+models:
+  - name: User
+    fields:
+      - name: username
+        type: string
+      - name: email
+        type: string
+      - name: password
+        type: string
+      
+actions:
+  - name: createUser
+    path: /users
+    method: POST
+    url: "rpc://@auth/CREATE-USER"
+    model: User
 
 #-- by default method field is GET
 #-- by default validation is empty

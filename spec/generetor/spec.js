@@ -106,9 +106,7 @@ class Spec{
             service: this.getService(),
             actions: this.getActions().map(action => {
                 return {...action,
-                    "model?": action.model != null ? {
-                        model: action.model
-                    } : false,
+                    "model?": action.model != null ? JSON.stringify( action.model ): false,
                     "fields?": action.fields != null? JSON.stringify(action.fields): false,
                     "isRpc": action.schema == "rpc",
                 }

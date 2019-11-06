@@ -1,0 +1,28 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: {{name}}
+spec:
+  containers:
+    - name: {{name}}
+      image: ubuntu
+      command: ["sh", "consul agent -data-dir=/var/lib/consul -node=$HOSTNAME -node-id=$(uuidgen) \
+                        -bind=0.0.0.0 -config-dir=/etc/consul.d \
+                        -retry-join <IP addr or hostname of consul agent server>"]
+  restartPolicy: Never
+
+ports:
+- name: liveness-port
+  containerPort: 80
+  hostPort: 80
+
+livenessProbe:
+  httpGet:
+    path: /_health
+    port: liveness-port
+readinessProbe:
+  httpGet:
+    path: /_health
+    port: liveness-port
+  initialDelaySeconds: 5
+  periodSeconds: 5
