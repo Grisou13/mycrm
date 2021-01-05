@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "auth.events": "file:../auth/events",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-polyfill": "^6.26.0",
     "deepstream.io-client-js": "^2.3.0",
     "dotenv": "^6.1.0",
