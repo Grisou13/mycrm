@@ -794,7 +794,7 @@ bufferutil@^3.0.2:
 "business.events@file:../events":
   version "1.0.0"
   dependencies:
-    utils "file:../../../../../home/thomas/.cache/yarn/utils"
+    utils "file:../../utils"
 
 cache-base@^1.0.1:
   version "1.0.1"
@@ -1753,6 +1753,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
+mongo-sanitize@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mongo-sanitize/-/mongo-sanitize-1.1.0.tgz#01346b55f90716a42de3a1f957500a11c0752c36"
+
 mongodb-core@3.1.11:
   version "3.1.11"
   resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.1.11.tgz#b253038dbb4d7329f3d1c2ee5400bb0c9221fde5"
@@ -2069,8 +2073,8 @@ path-key@^2.0.0, path-key@^2.0.1:
   resolved "https://registry.yarnpkg.com/path-key/-/path-key-2.0.1.tgz#411cadb574c5a140d3a4b1910d40d80cc9f40b40"
 
 path-parse@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
 
 pify@^3.0.0:
   version "3.0.0"
@@ -2482,6 +2486,10 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
+sqlstring@^2.3.1:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.2.tgz#cdae7169389a1375b18e885f2e60b3e460809514"
+
 stack-trace@0.0.x:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
@@ -2700,6 +2708,8 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
     "@babel/plugin-proposal-class-properties" "^7.3.0"
     babel-polyfill "^6.26.0"
     koa-compose "^4.1.0"
+    mongo-sanitize "^1.0.1"
+    sqlstring "^2.3.1"
     winston "^3.2.0"
 
 v8flags@^3.1.1:
