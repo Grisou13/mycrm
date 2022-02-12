@@ -711,7 +711,7 @@ atob@^2.1.1:
 "auth.events@file:../auth/events":
   version "1.0.0"
   dependencies:
-    utils "file:../../../../home/thomas/.cache/yarn/utils"
+    utils "file:../utils"
 
 axios@^0.18.0:
   version "0.18.0"
@@ -1059,7 +1059,7 @@ debug@^2.1.2, debug@^2.2.0, debug@^2.3.3:
   dependencies:
     ms "2.0.0"
 
-debug@^3.1.0, debug@^3.2.6:
+debug@^3.1.0:
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.2.6.tgz#e83d17de16d8a7efb7717edbe5fb10135eee629b"
   dependencies:
@@ -1298,10 +1298,8 @@ find-up@^3.0.0:
     locate-path "^3.0.0"
 
 follow-redirects@^1.3.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.7.0.tgz#489ebc198dc0e7f64167bd23b03c4c19b5784c76"
-  dependencies:
-    debug "^3.2.6"
+  version "1.14.8"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -2004,6 +2002,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
+mongo-sanitize@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mongo-sanitize/-/mongo-sanitize-1.1.0.tgz#01346b55f90716a42de3a1f957500a11c0752c36"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -2691,6 +2693,10 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
+sqlstring@^2.3.1:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.2.tgz#cdae7169389a1375b18e885f2e60b3e460809514"
+
 stack-trace@0.0.x:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
@@ -2932,6 +2938,8 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
     "@babel/plugin-proposal-class-properties" "^7.3.0"
     babel-polyfill "^6.26.0"
     koa-compose "^4.1.0"
+    mongo-sanitize "^1.0.1"
+    sqlstring "^2.3.1"
     winston "^3.2.0"
 
 v8flags@^3.1.1:
