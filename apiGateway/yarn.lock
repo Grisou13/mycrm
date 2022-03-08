@@ -711,7 +711,7 @@ atob@^2.1.1:
 "auth.events@file:../auth/events":
   version "1.0.0"
   dependencies:
-    utils "file:../../../../home/thomas/.cache/yarn/utils"
+    utils "file:../utils"
 
 axios@^0.18.0:
   version "0.18.0"
@@ -2004,6 +2004,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
+mongo-sanitize@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mongo-sanitize/-/mongo-sanitize-1.1.0.tgz#01346b55f90716a42de3a1f957500a11c0752c36"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -2691,6 +2695,10 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
+sqlstring@^2.3.1:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.3.tgz#2ddc21f03bce2c387ed60680e739922c65751d0c"
+
 stack-trace@0.0.x:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
@@ -2903,8 +2911,8 @@ upath@^1.0.5:
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.1.0.tgz#35256597e46a581db4793d0ce47fa9aebfc9fabd"
 
 urijs@^1.19.0:
-  version "1.19.1"
-  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.1.tgz#5b0ff530c0cbde8386f6342235ba5ca6e995d25a"
+  version "1.19.10"
+  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.10.tgz#8e2fe70a8192845c180f75074884278f1eea26cb"
 
 urix@^0.1.0:
   version "0.1.0"
@@ -2932,6 +2940,8 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
     "@babel/plugin-proposal-class-properties" "^7.3.0"
     babel-polyfill "^6.26.0"
     koa-compose "^4.1.0"
+    mongo-sanitize "^1.0.1"
+    sqlstring "^2.3.1"
     winston "^3.2.0"
 
 v8flags@^3.1.1:
